@@ -1,0 +1,17 @@
+<apex:page controller="OAuthController" >
+	<apex:sectionHeader title="Home" subtitle="OAuth" />
+	<apex:pageMessages />
+	<apex:form >
+		<apex:pageBlock title="BrivoLabs OAuth">
+			<apex:pageBlockButtons location="top" >
+				<apex:commandButton value="OAuth" action="{!OAuthCallback}" rendered="{!ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Client_ID__c) || ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Client_Name__c) ||
+																ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Client_Secret_Key__c) || ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Server_Url__c)}" />
+			</apex:pageBlockButtons>
+			<apex:outputLabel value="Click the button to get the OAuth Creadentials" rendered="{!ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Client_ID__c) || ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Client_Name__c) ||
+																ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Client_Secret_Key__c) || ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Server_Url__c)}" />
+																
+			<apex:outputLabel value="Already have brivo labs oauth credentials" rendered="{!NOT(ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Client_ID__c)) || NOT(ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Client_Name__c)) || 
+																NOT(ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Client_Secret_Key__c)) || NOT(ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Server_Url__c))}" />
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

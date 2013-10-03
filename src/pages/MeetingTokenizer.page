@@ -1,0 +1,76 @@
+<apex:page standardController="Event" extensions="MeetingTokenizerController" action="{!LoadPage}" tabStyle="Account">
+
+<style>
+        .errorMessage{color:red; font-weight: bold; font-size: 8pt;}
+        .loadingMessage{color:blue; font-weight: bold; font-size: 8pt;}
+        .token{color:green; font-weight: bold; font-size: 8pt;}
+</style>
+ 
+<apex:form rendered="{!enableTokenRequest}">
+        <apex:pageblock rendered="{!hasInvitees && NOT(ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Client_ID__c)) && NOT(ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Client_Name__c)) && 
+																NOT(ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Client_Secret_Key__c)) && NOT(ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Server_Url__c))}" > 
+                <apex:pageblockbuttons rendered="{!ISBLANK(evt.VMS_zone__c)}">
+                        <apex:commandButton value="Set location..." action="{!setLocation}"/>
+                </apex:pageblockbuttons> 
+                
+                <apex:pageblocksection title="Event location" columns="1">
+                        <apex:pageMessages />
+                        <apex:selectlist value="{!evt.VMS_zone__c}" size="1" rendered="{!ISBLANK(evt.VMS_zone__c)}">
+                                <apex:selectOption itemvalue="" itemLabel="-- select a location --"/>
+                                <apex:selectOptions value="{!locations}"/>
+                        </apex:selectlist>
+                        <apex:outputText rendered="{!ISBLANK(evt.VMS_zone__c)==false}" value="{!mapLocations[evt.VMS_zone__c]}"/> 
+                        <apex:commandButton rendered="{!ISBLANK(evt.VMS_zone__c)==false}" value="Change location..." action="{!changeLocation}"/>
+                </apex:pageblocksection>
+        
+                <apex:pageblocksection title="Select people to grant access" columns="1" rendered="{!ISBLANK(evt.VMS_zone__c)==false}">
+                				
+                				<!-- Command Buttons -->
+                				<apex:pageblocksection columns="2" >
+                					<apex:pageBlockSectionItem >
+                						<apex:outputPanel />
+                						<apex:outputPanel layout="block" style="padding-left:30em;" >
+                							<apex:commandButton value="Generate Tokens" action="{!GenerateTokens}" rendered="{!ISBLANK(evt.VMS_zone__c)==false}"  />
+                						</apex:outputPanel>
+                					</apex:pageBlockSectionItem>
+                					
+                					<apex:pageBlockSectionItem >
+                						<apex:outputPanel />
+                						<apex:outputPanel layout="block" style="padding-right:35em;" >
+                							<apex:commandButton value="Send Emails" action="{!sendEmails}" rendered="{!ISBLANK(evt.VMS_zone__c)==false}"  />
+                						</apex:outputPanel>
+                					</apex:pageBlockSectionItem>
+                				</apex:pageblocksection>
+                				
+                                <apex:pageblocktable value="{!tokens}" var="t">
+                                        <apex:column >
+                                                <apex:facet name="header">Sel.</apex:facet>
+                                                <apex:inputCheckbox value="{!t.isSelected}" disabled="{!t.enableToken==false}"/>
+                                        </apex:column>
+                                        
+                                        <apex:column >
+                                                <apex:facet name="header">Person</apex:facet>
+                                                <apex:outputlink value="/{!t.relation.RelationId}" target="_blank">{!t.relation.Relation.Name}</apex:outputlink>
+                                        </apex:column>
+                                        
+                                        <apex:column >
+                                                <apex:facet name="header">Status</apex:facet>
+                                                <apex:outputlabel value="{!t.relation.Status}"/>
+                                        </apex:column>
+                                </apex:pageblocktable>
+                        
+                </apex:pageblocksection>
+        
+        </apex:pageblock>
+        <apex:pageblock rendered="{!NOT(hasInvitees)}" > 
+        	<p>No invitees for this event.</p>
+        </apex:pageblock>
+        <apex:pageBlock rendered="{!ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Client_ID__c) || ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Client_Name__c) ||
+																ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Client_Secret_Key__c) || ISBLANK($Setup.Brivo_Labs_SAM_Connection_Settings__c.Server_Url__c)}" >
+			<p>Brivo Labs Oauth Credentials is required.</p>
+		</apex:pageBlock>												
+</apex:form>
+
+<apex:outputLabel rendered="{!enableTokenRequest==false}">No invitees for this event.</apex:outputLabel>
+
+</apex:page>
